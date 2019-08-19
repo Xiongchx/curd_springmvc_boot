@@ -3,8 +3,11 @@ package com.boot.curd.dao;
 import com.boot.curd.bean.Department;
 import com.boot.curd.bean.DepartmentExample;
 import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+@Mapper
 public interface DepartmentMapper {
     long countByExample(DepartmentExample example);
 
