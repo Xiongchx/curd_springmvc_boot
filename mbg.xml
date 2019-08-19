@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <context id="DB2Tables" targetRuntime="MyBatis3">
+        <commentGenerator>
+            <!--生成的文件去除注释-->
+            <property name="suppressAllComments" value="true" />
+        </commentGenerator>
+        
+        <!--数据库连接信息-->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/ssm_crud?useSSL=false"
+                        userId="root"
+                        password="961026">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <!--指定JavaBean生成位置-->
+        <javaModelGenerator targetPackage="com.boot.curd.bean" targetProject=".\src\main\webapp\java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <!--SQL映射文件位置-->
+        <sqlMapGenerator targetPackage="mappers"  targetProject=".\src\main\webapp\resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <!--DAO接口位置，mapper接口-->
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.boot.curd.dao"  targetProject=".\src\main\webapp\java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+        <!--每张表的生成策略-->
+        <!--<table schema="DB2ADMIN" tableName="ALLTYPES" domainObjectName="Customer" >
+            <property name="useActualColumnNames" value="true"/>
+            <generatedKey column="ID" sqlStatement="DB2" identity="true" />
+            <columnOverride column="DATE_FIELD" property="startDate" />
+            <ignoreColumn column="FRED" />
+            <columnOverride column="LONG_VARCHAR_FIELD" jdbcType="VARCHAR" />
+        </table>-->
+        <table tableName="tbl_emp" domainObjectName="Employee"></table>
+        <table tableName="tbl_dept" domainObjectName="Department"></table>
+
+    </context>
+</generatorConfiguration>
