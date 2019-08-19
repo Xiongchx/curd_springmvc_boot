@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 /**
- * 〈一句话功能简述〉<br> 
+ * 〈一句话功能简述〉<br>
  * 〈controller〉
  *
  * @author 26917
@@ -34,14 +34,14 @@ public class EmployeeController {
     EmployeeService employeeService;
 
     @GetMapping("/emps")
-    public String getEmps(@RequestParam(value = "pn",defaultValue = "1")Integer pn, Model model){
+    public String getEmps(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Model model) {
         //引入分页插件，startPage其后紧跟的查询为分页查询
-        PageHelper.startPage(pn,5);
+        PageHelper.startPage(pn, 8);
         List<Employee> emps = employeeService.getAll();
         // 包装查询结果，由PageInfo封装详细的分页信息，然后将PageInfo交给页面处理
         // 构造器中的第二个参数为连续显示的页数
-        PageInfo page=new PageInfo(emps,5);
-        model.addAttribute("pageInfo",page);
+        PageInfo page = new PageInfo(emps, 5);
+        model.addAttribute("pageInfo", page);
         return "list";
     }
 }

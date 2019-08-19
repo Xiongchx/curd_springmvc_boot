@@ -16,7 +16,7 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
- * 〈一句话功能简述〉<br> 
+ * 〈一句话功能简述〉<br>
  * 〈service〉
  *
  * @author 26917
@@ -28,7 +28,7 @@ public class EmployeeService {
     @Resource
     EmployeeMapper employeeMapper;
 
-    public List<Employee> getAll(){
+    public List<Employee> getAll() {
         return employeeMapper.selectByExampleWithDept(null);
     }
 }
