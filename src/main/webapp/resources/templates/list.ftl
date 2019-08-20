@@ -195,15 +195,33 @@
 
     /*提交模态框中的信息*/
     $("#emp_save_btn").click(function () {
+        //countEmp();
         $.ajax({
             url:"${request.contextPath}emp",
             type:"POST",
+            /*serialize的结果为 用于ajax的字符串，前提：表单中有name属性*/
             data:$("#empAddModal form").serialize(),
             success:function (result) {
-                alert(result.msg);
+                /*alert(result.msg);*/
+                /*保存之后，关闭模态框，跳转最后一页查看*/
+                $("#empAddModal").modal('hide');
+                /*发送ajax显示最后一页 页码直接通过json中的信息来获取*/
+                to_page(${json.pages});
             }
         });
     });
+
+    function to_page(pn){
+        /*$.ajax({
+            url:"${request.contextPath}/emps",
+            data:"pn="+pn,
+            type:"GET"
+        });*/
+        /*ajax可以访问到url,浏览器控制台可以看到正确的dom文档，
+        但是页面无法刷新，没排查到具体原因，这里直接跳转
+        初步认为是ftl模板内数据是通过后台json直接解析的原因*/
+        window.location.href='${request.contextPath}/emps?pn='+pn;
+    }
 </script>
 </body>
 </html>
