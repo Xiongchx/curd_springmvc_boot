@@ -26,6 +26,7 @@
                         <div class="col-sm-10">
                             <input type="text" name="empName" class="form-control" id="empName_add_input"
                                    placeholder="empName">
+                            <span class="help-block"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -33,6 +34,7 @@
                         <div class="col-sm-10">
                             <input type="text" name="email" class="form-control" id="email_add_input"
                                    placeholder="email@example.com">
+                            <span class="help-block"></span>
                         </div>
                     </div>
                     <div class="form-group">
@@ -193,15 +195,53 @@
         });
     }
 
+    function validate_add_form() {
+        /*获取校验数据  使用正则*/
+        var empName = $("#empName_add_input").val();
+        var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,8})/;
+        if (!regName.test(empName)) {
+            show_validate_msg("#empName_add_input", "error", "用户名可以是2-5位中文字符或6-16位英文及数字、短横线、下划线组合");
+            return false;
+        } else {
+            show_validate_msg("#empName_add_input","success","")
+        }
+        var email = $("#email_add_input").val();
+        var regEmail = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+        if (!regEmail.test(email)) {
+            show_validate_msg("#email_add_input","error","邮箱格式不正确");
+            return false;
+        } else {
+            show_validate_msg("#email_add_input","success","")
+        }
+        return true;
+    }
+
+    /*显示校验结果提示*/
+    function show_validate_msg(ele, status, msg) {
+        /*清除当前元素校验状态*/
+        $(ele).parent().removeClass("has-success has-error");
+        $(ele).next("span").text("");
+        if ("success" == status) {
+            $(ele).parent().addClass("has-success");
+            $(ele).next("span").text(msg);
+        } else if ("error" == status) {
+            $(ele).parent().addClass("has-error");
+            $(ele).next("span").text(msg);
+        }
+    }
+
     /*提交模态框中的信息*/
     $("#emp_save_btn").click(function () {
-        //countEmp();
+        /*提交前，校验数据*/
+        if (!validate_add_form()) {
+            return false;
+        }
         $.ajax({
-            url:"${request.contextPath}emp",
-            type:"POST",
+            url: "${request.contextPath}emp",
+            type: "POST",
             /*serialize的结果为 用于ajax的字符串，前提：表单中有name属性*/
-            data:$("#empAddModal form").serialize(),
-            success:function (result) {
+            data: $("#empAddModal form").serialize(),
+            success: function (result) {
                 /*alert(result.msg);*/
                 /*保存之后，关闭模态框，跳转最后一页查看*/
                 $("#empAddModal").modal('hide');
@@ -213,16 +253,11 @@
         });
     });
 
-    function to_page(pn){
-        /*$.ajax({
-            url:"${request.contextPath}/emps",
-            data:"pn="+pn,
-            type:"GET"
-        });*/
+    function to_page(pn) {
         /*ajax可以访问到url,浏览器控制台可以看到正确的dom文档，
         但是页面无法刷新，没排查到具体原因，这里直接跳转
         初步认为是ftl模板内数据是通过后台json直接解析的原因*/
-        window.location.href='${request.contextPath}/emps?pn='+pn;
+        window.location.href = '${request.contextPath}/emps?pn=' + pn;
     }
 </script>
 </body>
