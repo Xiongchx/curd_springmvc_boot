@@ -15,7 +15,8 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
                 <h4 class="modal-title" id="myModalLabel">添加员工</h4>
             </div>
             <div class="modal-body">
@@ -23,13 +24,15 @@
                     <div class="form-group">
                         <label for="empName_add_input" class="col-sm-2 control-label">empName</label>
                         <div class="col-sm-10">
-                            <input type="text" name="empName" class="form-control" id="empName_add_input" placeholder="empName">
+                            <input type="text" name="empName" class="form-control" id="empName_add_input"
+                                   placeholder="empName">
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="email_add_input" class="col-sm-2 control-label">email</label>
                         <div class="col-sm-10">
-                            <input type="text" name="email" class="form-control" id="email_add_input" placeholder="email@example.com">
+                            <input type="text" name="email" class="form-control" id="email_add_input"
+                                   placeholder="email@example.com">
                         </div>
                     </div>
                     <div class="form-group">
@@ -46,7 +49,7 @@
                     <div class="form-group">
                         <label for="empName_add_input" class="col-sm-2 control-label">deptName</label>
                         <div class="col-sm-4">
-                            <#--部门提交部门ID 与数据库一致-->
+                        <#--部门提交部门ID 与数据库一致-->
                             <select class="form-control" name="dId">
 
                             </select>
@@ -57,7 +60,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-primary" id="emp_save_btn">Save</button>
             </div>
         </div>
     </div>
@@ -78,14 +81,14 @@
         <div class="col-md-12">
             <table class="table table-hover" id="emps_tables">
                 <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>empName</th>
-                        <th>gender</th>
-                        <th>email</th>
-                        <th>deptName</th>
-                        <th>操作</th>
-                    </tr>
+                <tr>
+                    <th>#</th>
+                    <th>empName</th>
+                    <th>gender</th>
+                    <th>email</th>
+                    <th>deptName</th>
+                    <th>操作</th>
+                </tr>
                 </thead>
                 <tbody>
                     <#list json.list as emp>
@@ -163,32 +166,44 @@
     </div>
 </div>
 <script type="text/javascript">
-/*新增按钮弹出模态框*/
-$("#emp_add_modal_btn").click(function () {
-    // 发送ajax获取部门信息并绑定select
-    getDepts();
-    // 弹出
-    $("#empAddModal").modal({
-        backdrop:"static"
+    /*新增按钮弹出模态框*/
+    $("#emp_add_modal_btn").click(function () {
+        // 发送ajax获取部门信息并绑定select
+        getDepts();
+        // 弹出
+        $("#empAddModal").modal({
+            backdrop: "static"
+        });
     });
-});
 
-/*查询部门信息显示到select*/
-function getDepts() {
-    $.ajax({
-        url:"${request.contextPath}depts",
-        type:"GET",
-        success:function (result) {
-            /*填充之前，先清空select*/
-            $("#empAddModal select").empty();
-            //console.log(result);
-            $.each(result.extend.depts,function () {
-                var optionEle=$("<option></option>").append(this.deptName).attr("value",this.deptId)
-                optionEle.appendTo("#empAddModal select");
-            });
-        }
+    /*查询部门信息显示到select*/
+    function getDepts() {
+        $.ajax({
+            url: "${request.contextPath}depts",
+            type: "GET",
+            success: function (result) {
+                /*填充之前，先清空select*/
+                $("#empAddModal select").empty();
+                //console.log(result);
+                $.each(result.extend.depts, function () {
+                    var optionEle = $("<option></option>").append(this.deptName).attr("value", this.deptId)
+                    optionEle.appendTo("#empAddModal select");
+                });
+            }
+        });
+    }
+
+    /*提交模态框中的信息*/
+    $("#emp_save_btn").click(function () {
+        $.ajax({
+            url:"${request.contextPath}emp",
+            type:"POST",
+            data:$("#empAddModal form").serialize(),
+            success:function (result) {
+                alert(result.msg);
+            }
+        });
     });
-}
 </script>
 </body>
 </html>
