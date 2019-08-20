@@ -163,12 +163,32 @@
     </div>
 </div>
 <script type="text/javascript">
-    /*新增按钮弹出模态框*/
-    $("#emp_add_modal_btn").click(function () {
-        $("#empAddModal").modal({
-            backdrop:"static"
-        });
+/*新增按钮弹出模态框*/
+$("#emp_add_modal_btn").click(function () {
+    // 发送ajax获取部门信息并绑定select
+    getDepts();
+    // 弹出
+    $("#empAddModal").modal({
+        backdrop:"static"
     });
+});
+
+/*查询部门信息显示到select*/
+function getDepts() {
+    $.ajax({
+        url:"${request.contextPath}depts",
+        type:"GET",
+        success:function (result) {
+            /*填充之前，先清空select*/
+            $("#empAddModal select").empty();
+            //console.log(result);
+            $.each(result.extend.depts,function () {
+                var optionEle=$("<option></option>").append(this.deptName).attr("value",this.deptId)
+                optionEle.appendTo("#empAddModal select");
+            });
+        }
+    });
+}
 </script>
 </body>
 </html>
