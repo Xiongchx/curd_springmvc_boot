@@ -10,14 +10,14 @@ package com.boot.curd.controller;
 import com.alibaba.fastjson.JSON;
 import com.boot.curd.bean.Employee;
 import com.boot.curd.service.EmployeeService;
+import com.boot.curd.utils.Msg;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,6 +29,8 @@ import java.util.List;
  * @create 2019/8/19
  * @since 1.0.0
  */
+/*这里没有RestController，去方法中单独配@ResponseBody
+ * 此控制器中，/emps 配了默认访问页（DefaultView类），控制器配@RestController的话默认访问页将失效 */
 @Controller
 public class EmployeeController {
     //用logger展示json信息，用于在ftl中解析
@@ -36,6 +38,13 @@ public class EmployeeController {
 
     @Autowired
     EmployeeService employeeService;
+
+    @RequestMapping(value = "/emp",method = RequestMethod.POST)
+    @ResponseBody
+    public Msg saveEmp(Employee employee){
+        employeeService.saveEmp(employee);
+        return Msg.success();
+    }
 
     @GetMapping("/emps")
     public String getEmpsWithJson(@RequestParam(value = "pn", defaultValue = "1") Integer pn, Model model) {
