@@ -8,6 +8,7 @@
 package com.boot.curd.service;
 
 import com.boot.curd.bean.Employee;
+import com.boot.curd.bean.EmployeeExample;
 import com.boot.curd.dao.EmployeeMapper;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +34,13 @@ public class EmployeeService {
 
     public void saveEmp(Employee employee) {
         employeeMapper.insertSelective(employee);
+    }
+    /* true 可用  false 不可用*/
+    public boolean checkUser(String empName) {
+        EmployeeExample example = new EmployeeExample();
+        EmployeeExample.Criteria criteria = example.createCriteria();
+        criteria.andEmpNameEqualTo(empName);
+        long count = employeeMapper.countByExample(example);
+        return count==0;
     }
 }
