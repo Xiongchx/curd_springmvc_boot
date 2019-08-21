@@ -17,9 +17,14 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 〈一句话功能简述〉<br>
@@ -39,11 +44,25 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
-    @RequestMapping(value = "/emp",method = RequestMethod.POST)
+    /*员工保存
+     * 使用JSR303校验，需要Hibernate-Validator依赖包*/
+    @RequestMapping(value = "/emp", method = RequestMethod.POST)
     @ResponseBody
-    public Msg saveEmp(Employee employee){
-        employeeService.saveEmp(employee);
-        return Msg.success();
+    public Msg saveEmp(@Valid Employee employee, BindingResult result) {
+        if (result.hasErrors()) {
+            /*校验失败，返回相应的信息，去模态框中显示错误信息*/
+            Map<String,Object> map=new HashMap<>();
+            List<FieldError> errors=result.getFieldErrors();
+            for (FieldError fieldError:errors) {
+                System.out.println("错误的字段："+fieldError.getField());
+                System.out.println("错误信息："+fieldError.getDefaultMessage());
+                map.put(fieldError.getField(),fieldError.getDefaultMessage());
+            }
+            return Msg.fail().add("errorFields",map);
+        } else {
+            employeeService.saveEmp(employee);
+            return Msg.success();
+        }
     }
 
     @GetMapping("/emps")
