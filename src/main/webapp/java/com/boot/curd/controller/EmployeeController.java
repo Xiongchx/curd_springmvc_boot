@@ -95,4 +95,11 @@ public class EmployeeController {
             return Msg.fail().add("va_msg", "用户名不可用");
         }
     }
+
+    @RequestMapping(value = "/emp/{id}", method = RequestMethod.GET)
+    @ResponseBody
+    public Msg getEmp(@PathVariable("id") Integer id) {
+        Employee employee = employeeService.getEmp(id);
+        return Msg.success().add("emp", employee);
+    }
 }
