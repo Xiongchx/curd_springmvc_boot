@@ -51,14 +51,14 @@ public class EmployeeController {
     public Msg saveEmp(@Valid Employee employee, BindingResult result) {
         if (result.hasErrors()) {
             /*校验失败，返回相应的信息，去模态框中显示错误信息*/
-            Map<String,Object> map=new HashMap<>();
-            List<FieldError> errors=result.getFieldErrors();
-            for (FieldError fieldError:errors) {
-                System.out.println("错误的字段："+fieldError.getField());
-                System.out.println("错误信息："+fieldError.getDefaultMessage());
-                map.put(fieldError.getField(),fieldError.getDefaultMessage());
+            Map<String, Object> map = new HashMap<>();
+            List<FieldError> errors = result.getFieldErrors();
+            for (FieldError fieldError : errors) {
+                System.out.println("错误的字段：" + fieldError.getField());
+                System.out.println("错误信息：" + fieldError.getDefaultMessage());
+                map.put(fieldError.getField(), fieldError.getDefaultMessage());
             }
-            return Msg.fail().add("errorFields",map);
+            return Msg.fail().add("errorFields", map);
         } else {
             employeeService.saveEmp(employee);
             return Msg.success();
@@ -77,5 +77,16 @@ public class EmployeeController {
         model.addAttribute("pageInfo", JSON.toJSONString(page));
         //logger.debug(JSON.toJSONString(page));
         return "list";
+    }
+
+    @RequestMapping("/checkuser")
+    @ResponseBody
+    public Msg checkuser(@RequestParam("empName") String empName) {
+        boolean b = employeeService.checkUser(empName);
+        if (b) {
+            return Msg.success();
+        } else {
+            return Msg.fail();
+        }
     }
 }
