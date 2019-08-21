@@ -230,6 +230,23 @@
         }
     }
 
+    /*姓名的input失去焦点时，发送ajax检测重名*/
+    $("#empName_add_input").change(function () {
+        var empName = this.value;
+        $.ajax({
+            url: "${request.contextPath}checkuser",
+            data: "empName=" + empName,
+            type: "POST",
+            success: function (result) {
+                if (result.code == 100) {
+                    show_validate_msg("#empName_add_input", "success", "用户名可用");
+                } else {
+                    show_validate_msg("#empName_add_input", "error", "用户名已存在");
+                }
+            }
+        });
+    });
+
     /*提交模态框中的信息*/
     $("#emp_save_btn").click(function () {
         /*提交前，校验数据*/
