@@ -10,6 +10,62 @@
     <script src="resources/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
+<!-- 模态框--员工修改 -->
+<div class="modal fade" id="empUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">修改员工</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="empName_add_input" class="col-sm-2 control-label">empName</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static" id="empName_update_static"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email_add_input" class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="email" class="form-control" id="email_update_input"
+                                   placeholder="email@example.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">gender</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender1_update_input" value="M" checked="checked">
+                                男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender2_update_input" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="empName_add_input" class="col-sm-2 control-label">deptName</label>
+                        <div class="col-sm-4">
+                        <#--部门提交部门ID 与数据库一致-->
+                            <select class="form-control" id="emp_update_select" name="dId">
+
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="emp_update_btn">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- 模态框--员工添加 -->
 <div class="modal fade" id="empAddModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -95,7 +151,9 @@
                 <tbody>
                     <#list json.list as emp>
                     <tr>
-                        <th>${emp.empId}</th>
+                    <#-- id去除千位分隔符 -->
+                        <th>${emp.empId?replace(",","")}</th>
+                    <#--<th>${emp.empId}</th>-->
                         <th>${emp.empName}</th>
                         <th>
                                 <#if emp.gender=="M">
@@ -107,11 +165,11 @@
                         <th>${emp.email}</th>
                         <th>${emp.department.deptName}</th>
                         <th>
-                            <button class="btn btn-primary btn-sm">
+                            <button class="btn btn-primary btn-sm edit_btn" edit-id="${emp.empId?replace(",","")}">
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 编辑
                             </button>
-                            <button class="btn btn-danger btn-sm">
+                            <button class="btn btn-danger btn-sm delete_btn">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 删除
                             </button>
@@ -174,7 +232,7 @@
         * 不清除掉   下一次操作ajax将失效*/
         reset_form("#empAddModal form");
         // 发送ajax获取部门信息并绑定select
-        getDepts();
+        getDepts("#empAddModal select");
         // 弹出
         $("#empAddModal").modal({
             backdrop: "static"
@@ -183,7 +241,7 @@
 
     // 弹出之前清除上一次表单里的内容
     // jquery没有reset方法，获取dom对象来调用reset
-    function reset_form(ele){
+    function reset_form(ele) {
         $(ele)[0].reset();
         /*清空样式*/
         $(ele).find("*").removeClass("has-error has-success");
@@ -191,17 +249,17 @@
     }
 
     /*查询部门信息显示到select*/
-    function getDepts() {
+    function getDepts(ele) {
         $.ajax({
             url: "${request.contextPath}depts",
             type: "GET",
             success: function (result) {
                 /*填充之前，先清空select*/
-                $("#empAddModal select").empty();
+                $(ele).empty();
                 //console.log(result);
                 $.each(result.extend.depts, function () {
                     var optionEle = $("<option></option>").append(this.deptName).attr("value", this.deptId)
-                    optionEle.appendTo("#empAddModal select");
+                    optionEle.appendTo(ele);
                 });
             }
         });
@@ -308,6 +366,39 @@
         初步认为是ftl模板内数据是通过后台json直接解析的原因*/
         window.location.href = '${request.contextPath}/emps?pn=' + pn;
     }
+
+    /*按钮是先创建出的，在此处可以直接绑定click事件
+    * 如果click事件在创建按钮之前给出，则会无法绑定事件
+    * 如果按钮先由js创建了，（此案例由模板生成）
+    * 则需要进行事件绑定  .live()
+    * jquery新版没有live  可以用on 进行代替
+    * 如：
+    * $(document).on("click",".edit_btn",function(){   });
+    * */
+    $(".edit_btn").click(function () {
+        getDepts("#empUpdateModal select");
+        getEmp($(this).attr("edit-id"));
+        $("#empUpdateModal").modal({
+            backdrop: "static"
+        });
+    });
+
+    function getEmp(id) {
+        $.ajax({
+            url: "${request.contextPath}emp/" + id,
+            type: "GET",
+            success: function (result) {
+                console.log(result);
+                var empData = result.extend.emp;
+                $("#empName_update_static").text(empData.empName);
+                $("#email_update_input").val(empData.email);
+                $("#empUpdateModal input[name=gender]").val([empData.gender]);
+                /*存在选中错乱的BUG   以前类似的写法没有遇见过，可能跟模板有关*/
+                /*$("#empUpdateModal select").val([empData.dId]);*/
+            }
+        });
+    }
+
 </script>
 </body>
 </html>
