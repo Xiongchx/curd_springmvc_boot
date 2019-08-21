@@ -378,6 +378,8 @@
     $(".edit_btn").click(function () {
         getDepts("#empUpdateModal select");
         getEmp($(this).attr("edit-id"));
+        // 把员工ID传递给模态框的更新按钮
+        $("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"));
         $("#empUpdateModal").modal({
             backdrop: "static"
         });
@@ -398,6 +400,29 @@
             }
         });
     }
+
+    /*更新按钮  事件*/
+    $("#emp_update_btn").click(function () {
+        // 验证邮箱
+        var email = $("#email_update_input").val();
+        var regEmail = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
+        if (!regEmail.test(email)) {
+            show_validate_msg("#email_add_input", "error", "邮箱格式不正确");
+            return false;
+        } else {
+            show_validate_msg("#email_add_input", "success", "")
+        }
+        /*保存*/
+        $.ajax({
+            url:"${request.contextPath}emp/"+$(this).attr("edit-id"),
+            type:"PUT",
+            data:$("#empUpdateModal form").serialize(),
+            success:function (result) {
+                /*跳转修改过的页*/
+                to_page(${json.pageNum});
+            }
+        });
+    });
 
 </script>
 </body>
