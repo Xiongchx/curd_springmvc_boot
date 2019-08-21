@@ -38,7 +38,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="empName_add_input" class="col-sm-2 control-label">gender</label>
+                        <label class="col-sm-2 control-label">gender</label>
                         <div class="col-sm-10">
                             <label class="radio-inline">
                                 <input type="radio" name="gender" id="gender1_add_input" value="M" checked="checked"> 男
@@ -170,6 +170,13 @@
 <script type="text/javascript">
     /*新增按钮弹出模态框*/
     $("#emp_add_modal_btn").click(function () {
+        /*清除input空间上的颜色标志样式，一些非常规操作可能引起
+        * 不清除掉   下一次操作ajax将失效*/
+        show_validate_msg("#empName_add_input", "", "");
+        show_validate_msg("#email_add_input","","");
+        // 弹出之前清除上一次表单里的内容
+        // jquery没有reset方法，获取dom对象来调用reset
+        $("#empAddModal form")[0].reset();
         // 发送ajax获取部门信息并绑定select
         getDepts();
         // 弹出
@@ -239,9 +246,12 @@
             type: "POST",
             success: function (result) {
                 if (result.code == 100) {
+                    /*校验之后，添加状态到页面的class属性*/
                     show_validate_msg("#empName_add_input", "success", "用户名可用");
+                    $("#emp_save_btn").attr("ajax-va", "success");
                 } else {
                     show_validate_msg("#empName_add_input", "error", "用户名已存在");
+                    $("#emp_save_btn").attr("ajax-va", "error");
                 }
             }
         });
@@ -251,6 +261,11 @@
     $("#emp_save_btn").click(function () {
         /*提交前，校验数据*/
         if (!validate_add_form()) {
+            return false;
+        }
+        /*判断用户名重名校验是否成功*/
+        if ($(this).attr("ajax-va") == "error") {
+            show_validate_msg("#empName_add_input", "error", "请核对用户名信息无误");
             return false;
         }
         $.ajax({
