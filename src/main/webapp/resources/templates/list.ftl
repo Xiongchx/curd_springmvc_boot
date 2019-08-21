@@ -126,13 +126,13 @@
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h1>CURD_SpringMVC_Boot Demo</h1>
+            <h1>MVC_Boot Demo</h1>
         </div>
     </div>
     <div class="row">
         <div class="col-md-4 col-md-offset-8">
             <button class="btn btn-primary" id="emp_add_modal_btn">新增</button>
-            <button class="btn btn-danger">删除</button>
+            <button class="btn btn-danger" id="emp_delete_all_btn">删除</button>
         </div>
     </div>
     <div class="row">
@@ -140,6 +140,9 @@
             <table class="table table-hover" id="emps_tables">
                 <thead>
                 <tr>
+                    <th>
+                        <input type="checkbox" id="check_all"/>
+                    </th>
                     <th>#</th>
                     <th>empName</th>
                     <th>gender</th>
@@ -151,6 +154,9 @@
                 <tbody>
                     <#list json.list as emp>
                     <tr>
+                        <th>
+                            <input type="checkbox" class="check_item"/>
+                        </th>
                     <#-- id去除千位分隔符 -->
                         <th>${emp.empId?replace(",","")}</th>
                     <#--<th>${emp.empId}</th>-->
@@ -169,7 +175,7 @@
                                 <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                                 编辑
                             </button>
-                            <button class="btn btn-danger btn-sm delete_btn">
+                            <button class="btn btn-danger btn-sm delete_btn" del-id="${emp.empId?replace(",","")}">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                 删除
                             </button>
@@ -379,10 +385,26 @@
         getDepts("#empUpdateModal select");
         getEmp($(this).attr("edit-id"));
         // 把员工ID传递给模态框的更新按钮
-        $("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"));
+        $("#emp_update_btn").attr("edit-id", $(this).attr("edit-id"));
         $("#empUpdateModal").modal({
             backdrop: "static"
         });
+    });
+
+    /*单个删除*/
+    $(".delete_btn").click(function () {
+        /*弹框确认*/
+        var empName = $(this).parents("tr").find("th:eq(2)").text();
+        var empId = $(this).attr("del-id");
+        if (confirm("确认删除【" + empName + "】吗？")) {
+            $.ajax({
+                url: "${request.contextPath}emp/" + empId,
+                type: "DELETE",
+                success: function (result) {
+                    to_page(${json.pageNum});
+                }
+            });
+        }
     });
 
     function getEmp(id) {
@@ -401,6 +423,7 @@
         });
     }
 
+
     /*更新按钮  事件*/
     $("#emp_update_btn").click(function () {
         // 验证邮箱
@@ -414,16 +437,52 @@
         }
         /*保存*/
         $.ajax({
-            url:"${request.contextPath}emp/"+$(this).attr("edit-id"),
-            type:"PUT",
-            data:$("#empUpdateModal form").serialize(),
-            success:function (result) {
+            url: "${request.contextPath}emp/" + $(this).attr("edit-id"),
+            type: "PUT",
+            data: $("#empUpdateModal form").serialize(),
+            success: function (result) {
                 /*跳转修改过的页*/
                 to_page(${json.pageNum});
             }
         });
     });
 
+    /*全选 全不选*/
+    $("#check_all").click(function () {
+        /*attr()获取checked时，为undefined
+        * dom原生属性用prop
+        * 自定义属性可以用attr*/
+        $(".check_item").prop("checked", $(this).prop("checked"));
+    });
+
+    $(".check_item").click(function () {
+        /*判断选中元素的个数，是否为页面中数据量的个数，如：页面每页8条数据*/
+        var flag = $(".check_item:checked").length == $(".check_item").length
+        $("#check_all").prop("checked", flag);
+    });
+
+    /*批量删除*/
+    $("#emp_delete_all_btn").click(function () {
+        var empNames = "";
+        var del_idstr = "";
+        $.each($(".check_item:checked"), function () {
+            empNames += $(this).parents("tr").find("th:eq(2)").text() + "，";
+            /*用户删除的ID字符串*/
+            del_idstr += $(this).parents("tr").find("th:eq(1)").text() + "-";
+        });
+        /*去除末尾多余逗号   -    */
+        empNames = empNames.substring(0, empNames.length - 1);
+        del_idstr = del_idstr.substring(0, del_idstr.length - 1);
+        if (confirm("确认删除【" + empNames + "】吗？")) {
+            $.ajax({
+                url: "${request.contextPath}emp/" + del_idstr,
+                type: "DELETE",
+                success: function () {
+                    to_page(${json.pageNum});
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
