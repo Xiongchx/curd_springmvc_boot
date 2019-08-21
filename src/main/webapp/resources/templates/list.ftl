@@ -203,15 +203,15 @@
             show_validate_msg("#empName_add_input", "error", "用户名可以是2-5位中文字符或6-16位英文及数字、短横线、下划线组合");
             return false;
         } else {
-            show_validate_msg("#empName_add_input","success","")
+            show_validate_msg("#empName_add_input", "success", "")
         }
         var email = $("#email_add_input").val();
         var regEmail = /^[a-z\d]+(\.[a-z\d]+)*@([\da-z](-[\da-z])?)+(\.{1,2}[a-z]+)+$/;
         if (!regEmail.test(email)) {
-            show_validate_msg("#email_add_input","error","邮箱格式不正确");
+            show_validate_msg("#email_add_input", "error", "邮箱格式不正确");
             return false;
         } else {
-            show_validate_msg("#email_add_input","success","")
+            show_validate_msg("#email_add_input", "success", "")
         }
         return true;
     }
@@ -243,12 +243,24 @@
             data: $("#empAddModal form").serialize(),
             success: function (result) {
                 /*alert(result.msg);*/
-                /*保存之后，关闭模态框，跳转最后一页查看*/
-                $("#empAddModal").modal('hide');
-                /*发送ajax显示最后一页 页码直接通过json中的信息来获取
-                * 插入时，如果最后一页正好是页面容量大小的数据，则只会
-                * 跳转到倒数第二页， 用最大页码+1即可解决 */
-                to_page(${json.pages+1});
+                if (result.code == 100) {
+                    /*保存之后，关闭模态框，跳转最后一页查看*/
+                    $("#empAddModal").modal('hide');
+                    /*发送ajax显示最后一页 页码直接通过json中的信息来获取
+                    * 插入时，如果最后一页正好是页面容量大小的数据，则只会
+                    * 跳转到倒数第二页， 用最大页码+1即可解决 */
+                    to_page(${json.pages+1});
+                } else {
+                    // 失败信息,如果字段验证通过则没有错误信息，值为undefined，取反判断
+                    if (undefined != result.extend.errorFields.email) {
+                        //显示邮箱错误信息
+                        show_validate_msg("#email_add_input", "error", result.extend.errorFields.email);
+                    }
+                    if (undefined != result.extend.errorFields.empName) {
+                        //姓名错误信息
+                        show_validate_msg("#empName_add_input", "error", result.extend.errorFields.empName);
+                    }
+                }
             }
         });
     });
