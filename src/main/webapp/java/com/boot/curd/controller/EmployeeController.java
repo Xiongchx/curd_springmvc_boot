@@ -22,6 +22,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,8 +128,34 @@ public class EmployeeController {
     * */
     @PutMapping(value = "/emp/{empId}")
     @ResponseBody
-    public Msg saveEmp(Employee employee){
+    public Msg saveEmp(Employee employee) {
         employeeService.updateEmp(employee);
+        return Msg.success();
+    }
+
+    /**
+     * 单个 或 批量删除
+     * 批量传入id 中间用 - 隔开
+     *
+     * @param ids
+     * @return com.boot.curd.utils.Msg
+     * @author 26917
+     * @date 2019/8/22 1:43
+     */
+    @DeleteMapping("/emp/{ids}")
+    @ResponseBody
+    public Msg deleteEmpById(@PathVariable("ids") String ids) {
+        if (ids.contains("-")) {
+            /*组装id集合*/
+            String[] str_ids = ids.split("-");
+            List<Integer> del_ids = new ArrayList<>();
+            for (String string : str_ids) {
+                del_ids.add(Integer.parseInt(string));
+            }
+            employeeService.deleteBatch(del_ids);
+        } else {
+            employeeService.deleteEmp(Integer.parseInt(ids));
+        }
         return Msg.success();
     }
 }
