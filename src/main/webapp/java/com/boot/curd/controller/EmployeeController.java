@@ -46,7 +46,7 @@ public class EmployeeController {
 
     /*员工保存
      * 使用JSR303校验，需要Hibernate-Validator依赖包*/
-    @RequestMapping(value = "/emp", method = RequestMethod.POST)
+    @PostMapping("/emp")
     @ResponseBody
     public Msg saveEmp(@Valid Employee employee, BindingResult result) {
         if (result.hasErrors()) {
@@ -96,10 +96,39 @@ public class EmployeeController {
         }
     }
 
-    @RequestMapping(value = "/emp/{id}", method = RequestMethod.GET)
+    @GetMapping("/emp/{id}")
     @ResponseBody
     public Msg getEmp(@PathVariable("id") Integer id) {
         Employee employee = employeeService.getEmp(id);
         return Msg.success().add("emp", employee);
+    }
+
+    /*PutMapping中的id要求字段和数据库一致，否则为null
+
+      如果ajax直接发type:"PUT"的请求
+    * 封装的数据除了PutMapping中的empId，其他的全部为NULL
+    * 具体为请求体有数据，但是Employee对象封装不上
+    * 原因：  Tomcat将请求体中的数据封装一个Map
+    *
+    *        request.getParameter(xxx"")就会从这个Map取值
+    *
+    *        SprinMVC封装实体类对象的时候，会把实体类每个属性的值，
+    *        调用request.getParamter("xxx")拿到
+    * PUT请求，请求体中的数据，request.getParamter("xxx")是不能获取到的
+    * Tomcat遇到PUT请求则不会封装请求体的数据为Map,
+    * 只有POST形式的请求才封装请求体为Map
+    *
+    * 解决：
+    * Boot框架默认会过滤PUT请求，不需要单独配置
+    * SpringMVC+Spring的话需要单独配置HttpPutFormContentFilter过滤器
+    *
+    * 此过滤器会将PUT的请求体包装为request可用的数据，也就是Map
+    * 然后重写了getParameter,从它自己封装的Map里取数据
+    * */
+    @PutMapping(value = "/emp/{empId}")
+    @ResponseBody
+    public Msg saveEmp(Employee employee){
+        employeeService.updateEmp(employee);
+        return Msg.success();
     }
 }
