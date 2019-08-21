@@ -170,13 +170,9 @@
 <script type="text/javascript">
     /*新增按钮弹出模态框*/
     $("#emp_add_modal_btn").click(function () {
-        /*清除input空间上的颜色标志样式，一些非常规操作可能引起
+        /*清除input控件上的颜色标志样式、文字，   一些非常规操作可能引起
         * 不清除掉   下一次操作ajax将失效*/
-        show_validate_msg("#empName_add_input", "", "");
-        show_validate_msg("#email_add_input","","");
-        // 弹出之前清除上一次表单里的内容
-        // jquery没有reset方法，获取dom对象来调用reset
-        $("#empAddModal form")[0].reset();
+        reset_form("#empAddModal form");
         // 发送ajax获取部门信息并绑定select
         getDepts();
         // 弹出
@@ -184,6 +180,15 @@
             backdrop: "static"
         });
     });
+
+    // 弹出之前清除上一次表单里的内容
+    // jquery没有reset方法，获取dom对象来调用reset
+    function reset_form(ele){
+        $(ele)[0].reset();
+        /*清空样式*/
+        $(ele).find("*").removeClass("has-error has-success");
+        $(ele).find(".help-block").text("");
+    }
 
     /*查询部门信息显示到select*/
     function getDepts() {
@@ -207,7 +212,7 @@
         var empName = $("#empName_add_input").val();
         var regName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[\u2E80-\u9FFF]{2,8})/;
         if (!regName.test(empName)) {
-            show_validate_msg("#empName_add_input", "error", "用户名可以是2-5位中文字符或6-16位英文及数字、短横线、下划线组合");
+            show_validate_msg("#empName_add_input", "error", "用户名必须是2-5位中文字符或6-16位英文及数字、短横线、下划线组合");
             return false;
         } else {
             show_validate_msg("#empName_add_input", "success", "")
@@ -250,7 +255,7 @@
                     show_validate_msg("#empName_add_input", "success", "用户名可用");
                     $("#emp_save_btn").attr("ajax-va", "success");
                 } else {
-                    show_validate_msg("#empName_add_input", "error", "用户名已存在");
+                    show_validate_msg("#empName_add_input", "error", result.extend.va_msg);
                     $("#emp_save_btn").attr("ajax-va", "error");
                 }
             }
