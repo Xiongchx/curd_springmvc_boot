@@ -7,7 +7,6 @@
  */
 package com.boot.curd.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.boot.curd.bean.Department;
 import com.boot.curd.service.DepartmentService;
 import com.boot.curd.utils.Msg;

@@ -4,10 +4,8 @@ import com.boot.curd.bean.Employee;
 import com.boot.curd.bean.EmployeeExample;
 import java.util.List;
 
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-@Mapper
 public interface EmployeeMapper {
     long countByExample(EmployeeExample example);
 
