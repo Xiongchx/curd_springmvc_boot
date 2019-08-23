@@ -5,9 +5,9 @@
 <head>
     <title>员工列表</title>
     <meta charset="UTF-8"/>
-    <link href="resources/static/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="resources/static/js/jquery-1.12.4.min.js"></script>
-    <script src="resources/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
 <!-- 模态框--员工修改 -->
