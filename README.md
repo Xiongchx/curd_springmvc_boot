@@ -1,0 +1,6 @@
+# curd_springmvc_boot
+此Demo基于Maven+SpringMVC+SpringBoot+MyBatis，实现了完整的CRUD，除过对框架组合的基本使用外，还涉及到以下内容： Bootstrap以及FreeMarker搭建页面，MyBatis逆向工程使用，Rest风格URI、@responsebody注解完成AJAX，AJAX发送PUT请求的问题，jQuery前端校验，JSR303后端校验等。了解Boot之后做了这个练练手。在Boot中已经不再推荐JSP，也可以使用HTML来实现页面。如需学习此案例，需要有 SpringMVC、SpringBoot、MyBatis、Maven、FreeMarker、jQuery、Ajax 基础。
+
+关于注解来做sql的问题，为了图方便我是用了工具类来自动生成mapper的，通过注解去做动态sql也是可行的。毕竟这是一个简单的案例。可以clone之后自行改动。
+
+修改的模态框内存在一个select选项填充之后错乱的问题，多次打开模态框，select中的项会发生不同的变化，暂不清楚bug原因。
